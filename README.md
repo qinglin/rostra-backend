@@ -12,3 +12,9 @@ Use flask to provide restful api  for rostra app
     pip install flask_mongoengine
     pip install flask-restplus
 
+## Start 
+
+    flask run
+    
+If you run the code below and visit your API’s root URL (http://localhost:5000) you can view the automatically-generated Swagger UI documentation.
+    
