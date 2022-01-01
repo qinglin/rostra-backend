@@ -18,5 +18,9 @@ Use flask to provide restful api  for rostra app
     
 If you run the code below and visit your API’s root URL (http://localhost:5000) you can view the automatically-generated Swagger UI documentation.
 
+The API Provided is as list in the pic below
+
+![Swagger](api/swagger.png)
+
 
     
