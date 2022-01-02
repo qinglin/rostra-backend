@@ -17,10 +17,10 @@ db = MongoEngine()
 db.init_app(app)
 api = Api(app, version='1.0', title='Rostra Backend API',
           description='Rostra Backend Restful API')
-rostra_conf = api.namespace('Rostra', description='Rostra APIs')
+rostra_conf = api.namespace('rostra', description='Rostra APIs')
 
 
-@rostra_conf.route('/get-guilds/', methods=['GET'])
+@rostra_conf.route('/guild/get/', methods=['GET'])
 @api.response(200, 'Query Successful')
 class Get(Resource):
     def get(self):
@@ -28,7 +28,7 @@ class Get(Resource):
         return {"result": guilds.to_json()}
 
 
-@rostra_conf.route('/get-guilds/<address>', methods=['GET'])
+@rostra_conf.route('/guild/get/<address>', methods=['GET'])
 @rostra_conf.doc(params={'address': 'wallet address'})
 @api.response(200, 'Query Successful')
 class Get(Resource):
@@ -59,7 +59,7 @@ resource_fields = rostra_conf.model('guild', {
 })
 
 
-@rostra_conf.route('/add-guild/', methods=['POST'])
+@rostra_conf.route('/guild/add/', methods=['POST'])
 class Add(Resource):
     @rostra_conf.doc(body=resource_fields, responses={201: 'Guild Created'})
     @api.response(500, 'Internal Error')
