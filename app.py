@@ -22,6 +22,7 @@ rostra_conf = api.namespace('rostra', description='Rostra APIs')
 
 @rostra_conf.route('/guild/get/', methods=['GET'])
 @api.response(200, 'Query Successful')
+@api.response(500, 'Internal Error')
 class Get(Resource):
     def get(self):
         guilds = Guild.objects()
@@ -31,6 +32,7 @@ class Get(Resource):
 @rostra_conf.route('/guild/get/<address>', methods=['GET'])
 @rostra_conf.doc(params={'address': 'wallet address'})
 @api.response(200, 'Query Successful')
+@api.response(500, 'Internal Error')
 class Get(Resource):
     def get(self, address):
         print(address)
