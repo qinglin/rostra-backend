@@ -11,6 +11,8 @@ Use flask to provide restful api  for rostra app
     pip install Flask
     pip install flask_mongoengine
     pip install flask-restplus
+    pip install flask-cors
+
 
 ## Start 
 

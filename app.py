@@ -1,13 +1,18 @@
 from flask import Flask
 from flask_mongoengine import MongoEngine
 from flask_restx import Resource, Api, fields
+from flask_cors import CORS
+
 import json
 
 from models import Guild
 from models import Nft
 from models import Members
 
+
 app = Flask(__name__)
+CORS(app)
+
 app.config['MONGODB_SETTINGS'] = {
     'db': 'guild',
     'host': 'localhost',
