@@ -10,7 +10,7 @@ Use flask to provide restful api  for rostra app
 
     pip install Flask
     pip install flask_mongoengine
-    pip install flask-restplus
+    pip install flask-restx
     pip install flask-cors
 
 
@@ -23,6 +23,12 @@ If you run the code below and visit your API’s root URL (http://localhost:5000
 The API Provided is as list in the pic below
 
 ![Swagger](api/swagger.png)
+
+## Deploy
+
+    1. pip install gunicorn
+    2. run the start.sh script
+    
 
 
     
