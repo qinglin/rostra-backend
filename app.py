@@ -51,7 +51,7 @@ member_fields = rostra_conf.model('member', {
 })
 
 
-@rostra_conf.route('/member/add/', methods=['POST'])
+@rostra_conf.route('guild/members/add/', methods=['POST'])
 class Add(Resource):
     @rostra_conf.doc(body=member_fields, responses={201: 'Member added to Guild'})
     @api.response(500, 'Internal Error')
