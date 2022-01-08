@@ -15,7 +15,7 @@ class Nft(me.EmbeddedDocument):
         return "%s : %s\n" % (self.name, self.baseURI)
 
 
-class Members(me.EmbeddedDocument):
+class Requirements(me.EmbeddedDocument):
     nfts = ListField(EmbeddedDocumentField('Nft'))
     guilds = ListField(IntField())
 
@@ -29,12 +29,12 @@ class Guild(me.Document):
     email = StringField()
     desc = StringField()
     creator = StringField()
-    wallet_address = StringField()
+    members = ListField(StringField())
     signature = StringField()
-    members = EmbeddedDocumentField('Members')
+    requirements = EmbeddedDocumentField('Requirements')
 
     def __repr__(self):
-        return "%s : %s : %s : %s : %s : %s : %s \n" % self.guild_id, self.name, self.email, self.desc, self.creator, self.signature, self.members
+        return "%s , %s , %s , %s , %s\n " % (self.guild_id, self.name, self.email, self.desc, self.creator)
 
 
 
