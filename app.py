@@ -39,7 +39,7 @@ class Get(Resource):
 class Get(Resource):
     def get(self, address):
         try:
-            query_by_address = Guild.objects(wallet_address=address)
+            query_by_address = Guild.objects(members__in=[address])
             if query_by_address is not None:
                 return {"result": query_by_address.to_json()}, 200
             else:
