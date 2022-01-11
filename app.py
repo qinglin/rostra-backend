@@ -2,9 +2,7 @@ from flask import Flask
 from flask_mongoengine import MongoEngine
 from flask_restx import Resource, Api, fields
 from flask_cors import CORS
-
 import json
-
 from models import Guild
 from models import Nft
 from models import Requirements
@@ -40,7 +38,6 @@ class Get(Resource):
 @api.response(500, 'Internal Error')
 class Get(Resource):
     def get(self, address):
-        print(address)
         query_by_address = Guild.objects(wallet_address=address)
         return {"result": query_by_address.to_json()}
 
@@ -60,9 +57,7 @@ class Add(Resource):
         guild_id = data['guild_id']
         wallet_address = data['wallet_address']
         query_by_guild_id = Guild.objects(guild_id=guild_id)
-
         guild = query_by_guild_id[0]
-        print(guild)
         guild.members.append(wallet_address)
         guild.save()
         return json.dumps({'message': 'SUCCESS'}), 201
@@ -94,7 +89,7 @@ class Add(Resource):
     @rostra_conf.doc(body=resource_fields, responses={201: 'Guild Created'})
     @api.response(500, 'Internal Error')
     def post(self):
-        # try:
+        try:
             data = api.payload
             guild_id = data['guild_id']
             name = data['name']
@@ -107,14 +102,13 @@ class Add(Resource):
             guilds_array = []
             for guild in guilds:
                 guilds_array.append(int(guild))
-            print(guilds_array)
             nft_array = []
+
             for nft in nfts:
                 nft_name = nft['name']
                 nft_baseURI = nft['baseURI']
                 nft_obj = Nft(name=nft_name, baseURI=nft_baseURI)
                 nft_array.append(nft_obj)
-            print(nft_array)
             requirements = Requirements(nfts=nft_array, guilds=guilds_array)
             guild = Guild(name=name,
                           guild_id=guild_id,
@@ -126,6 +120,6 @@ class Add(Resource):
 
             guild.save()
             return json.dumps({'message': 'SUCCESS'}), 201
-        # except Exception as e:
-        #     return json.dumps({'error': str(e)})
+        except Exception as e:
+            return json.dumps({'error': str(e)})
 
