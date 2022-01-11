@@ -38,8 +38,14 @@ class Get(Resource):
 @api.response(500, 'Internal Error')
 class Get(Resource):
     def get(self, address):
-        query_by_address = Guild.objects(wallet_address=address)
-        return {"result": query_by_address.to_json()}
+        try:
+            query_by_address = Guild.objects(wallet_address=address)
+            if query_by_address is not None:
+                return {"result": query_by_address.to_json()}, 200
+            else:
+                return {"result": {}}, 200
+        except Exception as e:
+            return json.dumps({'error': str(e)})
 
 
 member_fields = rostra_conf.model('member', {
