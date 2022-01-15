@@ -3,8 +3,10 @@ from mongoengine import (
     IntField,
     StringField,
     ListField,
-    EmbeddedDocumentField
+    EmbeddedDocumentField,
+    ObjectIdField
 )
+from bson import ObjectId
 
 
 class Nft(me.EmbeddedDocument):
@@ -24,7 +26,7 @@ class Requirements(me.EmbeddedDocument):
 
 
 class Guild(me.Document):
-    guild_id = IntField()
+    guild_id = ObjectIdField(default=ObjectId)  # mention default as ObjectId
     name = StringField()
     email = StringField()
     desc = StringField()

@@ -6,6 +6,7 @@ import json
 from models import Guild
 from models import Nft
 from models import Requirements
+from flask import jsonify
 
 
 app = Flask(__name__)
@@ -29,7 +30,9 @@ rostra_conf = api.namespace('rostra', description='Rostra APIs')
 class Get(Resource):
     def get(self):
         guilds = Guild.objects()
-        return {"result": guilds.to_json()}
+        return jsonify({
+            "guilds": guilds
+        })
 
 
 @rostra_conf.route('/guild/get/<address>', methods=['GET'])
@@ -41,7 +44,9 @@ class Get(Resource):
         try:
             query_by_address = Guild.objects(members__in=[address])
             if query_by_address is not None:
-                return {"result": query_by_address.to_json()}, 200
+                return jsonify({
+                    "result": query_by_address
+                }), 200
             else:
                 return {"result": {}}, 200
         except Exception as e:
@@ -80,7 +85,7 @@ members = rostra_conf.model('Requirements', {
 })
 
 resource_fields = rostra_conf.model('guild', {
-    "guild_id": fields.Integer(required=True, description='The guild id identifier'),
+    #"guild_id": fields.Integer(required=True, description='The guild id identifier'),
     'name': fields.String(required=True, description='The guild name identifier'),
     "desc": fields.String,
     "creator": fields.String,
@@ -97,11 +102,11 @@ class Add(Resource):
     def post(self):
         try:
             data = api.payload
-            guild_id = data['guild_id']
+            # guild_id = data['guild_id']
             name = data['name']
             desc = data['desc']
             creator = data['creator']
-            #wallet_address = data['wallet_address']
+            # wallet_address = data['wallet_address']
             signature = data['signature']
             nfts = data['requirements']['nfts']
             guilds = data['requirements']['guilds']
@@ -117,7 +122,6 @@ class Add(Resource):
                 nft_array.append(nft_obj)
             requirements = Requirements(nfts=nft_array, guilds=guilds_array)
             guild = Guild(name=name,
-                          guild_id=guild_id,
                           desc=desc,
                           creator=creator,
                           #wallet_address=wallet_address,
