@@ -6,7 +6,7 @@ import json
 from models import Guild
 from models import Nft
 from models import Requirements
-from flask import jsonify
+from flask import jsonify, request
 
 
 app = Flask(__name__)
@@ -50,7 +50,7 @@ class Get(Resource):
             else:
                 return {"result": {}}, 200
         except Exception as e:
-            return json.dumps({'error': str(e)})
+            return {'error': str(e)}
 
 
 member_fields = rostra_conf.model('member', {
@@ -71,7 +71,7 @@ class Add(Resource):
         guild = query_by_guild_id[0]
         guild.members.append(wallet_address)
         guild.save()
-        return json.dumps({'message': 'SUCCESS'}), 201
+        return {'message': 'SUCCESS'}, 201
 
 
 nft = rostra_conf.model('Nft', {
@@ -100,9 +100,9 @@ class Add(Resource):
     @rostra_conf.doc(body=resource_fields, responses={201: 'Guild Created'})
     @api.response(500, 'Internal Error')
     def post(self):
-        try:
+       # try:
             data = api.payload
-            # guild_id = data['guild_id']
+            print(api.payload)
             name = data['name']
             desc = data['desc']
             creator = data['creator']
@@ -129,7 +129,7 @@ class Add(Resource):
                           requirements=requirements)
 
             guild.save()
-            return json.dumps({'message': 'SUCCESS'}), 201
-        except Exception as e:
-            return json.dumps({'error': str(e)})
+            return {'message': 'SUCCESS'}, 201
+        #except Exception as e:
+       #     return json.dumps({'error': str(e)})
 
