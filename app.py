@@ -43,10 +43,11 @@ class Get(Resource):
     def get(self, address):
         try:
             query_by_address = Guild.objects(members__in=[address])
-            if query_by_address is not None:
-                return jsonify({
-                    "result": query_by_address
-                }), 200
+            print(query_by_address)
+            if query_by_address is not None and len(query_by_address) != 0:
+                return {
+                    "result": json.dumps(query_by_address)
+                }, 200
             else:
                 return {"result": {}}, 200
         except Exception as e:
