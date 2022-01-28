@@ -1,12 +1,12 @@
-from flask import Flask
+from flask import Flask, make_response
 from flask_mongoengine import MongoEngine
 from flask_restx import Resource, Api, fields
 from flask_cors import CORS
-import json
 from models import Guild
 from models import Nft
 from models import Requirements
-from flask import jsonify, request
+from flask import jsonify
+import uuid
 
 
 app = Flask(__name__)
@@ -42,12 +42,12 @@ class Get(Resource):
 class Get(Resource):
     def get(self, address):
         try:
-            query_by_address = Guild.objects(members__in=[address])
+            query_by_address = Guild.objects(creator=address)
             print(query_by_address)
             if query_by_address is not None and len(query_by_address) != 0:
-                return {
-                    "result": json.dumps(query_by_address)
-                }, 200
+                return jsonify({
+                    "result": query_by_address
+                })
             else:
                 return {"result": {}}, 200
         except Exception as e:
@@ -122,10 +122,11 @@ class Add(Resource):
                 nft_obj = Nft(name=nft_name, baseURI=nft_baseURI)
                 nft_array.append(nft_obj)
             requirements = Requirements(nfts=nft_array, guilds=guilds_array)
-            guild = Guild(name=name,
+            guild = Guild(
+                          guild_id=str(uuid.uuid4()),
+                          name=name,
                           desc=desc,
                           creator=creator,
-                          #wallet_address=wallet_address,
                           signature=signature,
                           requirements=requirements)
 
