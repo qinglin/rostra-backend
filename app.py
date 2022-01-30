@@ -67,6 +67,7 @@ class Add(Resource):
     def post(self):
         data = api.payload
         guild_id = data['guild_id']
+        guild_name = data['guild_name']
         wallet_address = data['wallet_address']
         query_by_guild_id = Guild.objects(guild_id=guild_id)
         guild = query_by_guild_id[0]
@@ -100,6 +101,7 @@ resource_fields = rostra_conf.model('guild', {
 class Add(Resource):
     @rostra_conf.doc(body=resource_fields, responses={201: 'Guild Created'})
     @api.response(500, 'Internal Error')
+    @api.response(401, 'Validation Error')
     def post(self):
        # try:
             data = api.payload
@@ -112,6 +114,10 @@ class Add(Resource):
             nfts = data['requirements']['nfts']
             guilds = data['requirements']['guilds']
             guilds_array = []
+
+            # validation if the guild name already exists
+            if len(Guild.objects(name=name)) != 0:
+                return {'message': 'The Guild Name Already Exists! Please change your guild name'}, 401
             for guild in guilds:
                 guilds_array.append(int(guild))
             nft_array = []
