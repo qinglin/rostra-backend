@@ -87,13 +87,9 @@ members = rostra_conf.model('Requirements', {
 })
 
 resource_fields = rostra_conf.model('guild', {
-    #"guild_id": fields.Integer(required=True, description='The guild id identifier'),
     'name': fields.String(required=True, description='The guild name identifier'),
     "desc": fields.String,
     "creator": fields.String,
-    # "members": fields.List(fields.String),
-    # "signature": fields.String,
-    # "requirements": fields.Nested(members)
 })
 
 
@@ -109,32 +105,16 @@ class Add(Resource):
             name = data['name']
             desc = data['desc']
             creator = data['creator']
-            # wallet_address = data['wallet_address']
-            # signature = data['signature']
-            # nfts = data['requirements']['nfts']
-            # guilds = data['requirements']['guilds']
-            # guilds_array = []
 
             # validation if the guild name already exists
             if len(Guild.objects(name=name)) != 0:
                 return {'message': 'The Guild Name Already Exists! Please change your guild name'}, 401
-            # for guild in guilds:
-            #     guilds_array.append(int(guild))
-            # nft_array = []
 
-            # for nft in nfts:
-            #     nft_name = nft['name']
-            #     nft_baseURI = nft['baseURI']
-            #     nft_obj = Nft(name=nft_name, baseURI=nft_baseURI)
-            #     nft_array.append(nft_obj)
-            # requirements = Requirements(nfts=nft_array, guilds=guilds_array)
             guild = Guild(
                 guild_id=str(uuid.uuid4()),
                 name=name,
                 desc=desc,
                 creator=creator,
-                #   signature=signature,
-                #   requirements=requirements
             )
 
             guild.save()
