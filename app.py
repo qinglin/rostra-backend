@@ -35,6 +35,24 @@ class Get(Resource):
         })
 
 
+@rostra_conf.route('/guild/<guild_id>', methods=['GET'])
+@rostra_conf.doc(params={'guild_id': 'guild id'})
+@api.response(200, 'Query Successful')
+@api.response(500, 'Internal Error')
+class Get(Resource):
+    def get(self, guild_id):
+        try:
+            query_by_guild_id = Guild.objects(guild_id=guild_id)
+            print(query_by_guild_id)
+            if query_by_guild_id is not None and len(query_by_guild_id) != 0:
+                return jsonify({
+                    "result": query_by_guild_id[0]
+                })
+            else:
+                return {"result": ''}, 200
+        except Exception as e:
+            return {'error': str(e)}
+
 @rostra_conf.route('/guild/get/<address>', methods=['GET'])
 @rostra_conf.doc(params={'address': 'wallet address'})
 @api.response(200, 'Query Successful')
