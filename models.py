@@ -35,7 +35,7 @@ class Guild(me.Document):
     # requirements = EmbeddedDocumentField('Requirements')
 
     def __repr__(self):
-        return "%s , %s , %s , %s , %s\n " % (self.guild_id, self.name, self.email, self.desc, self.creator)
+        return "%s , %s , %s , %s\n " % (self.guild_id, self.name, self.desc, self.creator)
 
 
 
