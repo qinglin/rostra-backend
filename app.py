@@ -31,7 +31,7 @@ class Get(Resource):
     def get(self):
         guilds = Guild.objects()
         return jsonify({
-            "guilds": guilds
+            "result": guilds
         })
 
 
