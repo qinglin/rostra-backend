@@ -49,7 +49,7 @@ class Get(Resource):
                     "result": query_by_address
                 })
             else:
-                return {"result": {}}, 200
+                return {"result": []}, 200
         except Exception as e:
             return {'error': str(e)}
 
