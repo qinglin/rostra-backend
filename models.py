@@ -27,12 +27,12 @@ class Requirements(me.EmbeddedDocument):
 class Guild(me.Document):
     guild_id = StringField()
     name = StringField()
-    email = StringField()
     desc = StringField()
     creator = StringField()
-    members = ListField(StringField())
-    signature = StringField()
-    requirements = EmbeddedDocumentField('Requirements')
+    # email = StringField()
+    # members = ListField(StringField())
+    # signature = StringField()
+    # requirements = EmbeddedDocumentField('Requirements')
 
     def __repr__(self):
         return "%s , %s , %s , %s , %s\n " % (self.guild_id, self.name, self.email, self.desc, self.creator)
