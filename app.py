@@ -3,11 +3,8 @@ from flask_mongoengine import MongoEngine
 from flask_restx import Resource, Api, fields
 from flask_cors import CORS
 from models import Guild
-from models import Nft
-from models import Requirements
 from flask import jsonify
 import uuid
-
 
 app = Flask(__name__)
 CORS(app)
@@ -53,6 +50,7 @@ class Get(Resource):
         except Exception as e:
             return {'error': str(e)}
 
+
 @rostra_conf.route('/guild/get/<address>', methods=['GET'])
 @rostra_conf.doc(params={'address': 'wallet address'})
 @api.response(200, 'Query Successful')
@@ -85,7 +83,6 @@ class Add(Resource):
     def post(self):
         data = api.payload
         guild_id = data['guild_id']
-        guild_name = data['guild_name']
         wallet_address = data['wallet_address']
         query_by_guild_id = Guild.objects(guild_id=guild_id)
         guild = query_by_guild_id[0]
@@ -117,9 +114,7 @@ class Add(Resource):
     @api.response(500, 'Internal Error')
     @api.response(401, 'Validation Error')
     def post(self):
-       # try:
             data = api.payload
-            print(api.payload)
             name = data['name']
             desc = data['desc']
             creator = data['creator']
@@ -137,6 +132,4 @@ class Add(Resource):
 
             guild.save()
             return {'message': 'SUCCESS'}, 201
-        #except Exception as e:
-       #     return json.dumps({'error': str(e)})
 
