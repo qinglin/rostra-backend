@@ -3,11 +3,8 @@ from flask_mongoengine import MongoEngine
 from flask_restx import Resource, Api, fields
 from flask_cors import CORS
 from models import Guild
-from models import Nft
-from models import Requirements
 from flask import jsonify
 import uuid
-
 
 app = Flask(__name__)
 CORS(app)
@@ -31,8 +28,27 @@ class Get(Resource):
     def get(self):
         guilds = Guild.objects()
         return jsonify({
-            "guilds": guilds
+            "result": guilds
         })
+
+
+@rostra_conf.route('/guild/<guild_id>', methods=['GET'])
+@rostra_conf.doc(params={'guild_id': 'guild id'})
+@api.response(200, 'Query Successful')
+@api.response(500, 'Internal Error')
+class Get(Resource):
+    def get(self, guild_id):
+        try:
+            query_by_guild_id = Guild.objects(guild_id=guild_id)
+            print(query_by_guild_id)
+            if query_by_guild_id is not None and len(query_by_guild_id) != 0:
+                return jsonify({
+                    "result": query_by_guild_id[0]
+                })
+            else:
+                return {"result": ''}, 200
+        except Exception as e:
+            return {'error': str(e)}
 
 
 @rostra_conf.route('/guild/get/<address>', methods=['GET'])
@@ -49,7 +65,7 @@ class Get(Resource):
                     "result": query_by_address
                 })
             else:
-                return {"result": {}}, 200
+                return {"result": []}, 200
         except Exception as e:
             return {'error': str(e)}
 
@@ -67,7 +83,6 @@ class Add(Resource):
     def post(self):
         data = api.payload
         guild_id = data['guild_id']
-        guild_name = data['guild_name']
         wallet_address = data['wallet_address']
         query_by_guild_id = Guild.objects(guild_id=guild_id)
         guild = query_by_guild_id[0]
@@ -87,13 +102,9 @@ members = rostra_conf.model('Requirements', {
 })
 
 resource_fields = rostra_conf.model('guild', {
-    #"guild_id": fields.Integer(required=True, description='The guild id identifier'),
     'name': fields.String(required=True, description='The guild name identifier'),
     "desc": fields.String,
     "creator": fields.String,
-    "members": fields.List(fields.String),
-    "signature": fields.String,
-    "requirements": fields.Nested(members)
 })
 
 
@@ -103,41 +114,22 @@ class Add(Resource):
     @api.response(500, 'Internal Error')
     @api.response(401, 'Validation Error')
     def post(self):
-       # try:
             data = api.payload
-            print(api.payload)
             name = data['name']
             desc = data['desc']
             creator = data['creator']
-            # wallet_address = data['wallet_address']
-            signature = data['signature']
-            nfts = data['requirements']['nfts']
-            guilds = data['requirements']['guilds']
-            guilds_array = []
 
             # validation if the guild name already exists
             if len(Guild.objects(name=name)) != 0:
                 return {'message': 'The Guild Name Already Exists! Please change your guild name'}, 401
-            for guild in guilds:
-                guilds_array.append(int(guild))
-            nft_array = []
 
-            for nft in nfts:
-                nft_name = nft['name']
-                nft_baseURI = nft['baseURI']
-                nft_obj = Nft(name=nft_name, baseURI=nft_baseURI)
-                nft_array.append(nft_obj)
-            requirements = Requirements(nfts=nft_array, guilds=guilds_array)
             guild = Guild(
-                          guild_id=str(uuid.uuid4()),
-                          name=name,
-                          desc=desc,
-                          creator=creator,
-                          signature=signature,
-                          requirements=requirements)
+                guild_id=str(uuid.uuid4()),
+                name=name,
+                desc=desc,
+                creator=creator,
+            )
 
             guild.save()
             return {'message': 'SUCCESS'}, 201
-        #except Exception as e:
-       #     return json.dumps({'error': str(e)})
 
