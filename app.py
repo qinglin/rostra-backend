@@ -129,7 +129,27 @@ class Add(Resource):
                 desc=desc,
                 creator=creator,
             )
-
             guild.save()
             return {'message': 'SUCCESS'}, 201
+
+
+@rostra_conf.route('/guild/delete/<guild_id>', methods=['DELETE'])
+@rostra_conf.doc(params={'guild_id': 'Id of the guild'})
+class Delete(Resource):
+    @api.response(201, 'Guild Deleted')
+    @api.response(500, 'Internal Error')
+    @api.response(401, 'Validation Error')
+    def delete(self, guild_id):
+        try:
+            query_by_guild_id = Guild.objects(guild_id=guild_id)
+            print(query_by_guild_id)
+
+            if query_by_guild_id is not None and len(query_by_guild_id) != 0:
+                query_by_guild_id.delete()
+                return {'message': 'SUCCESS'}, 201
+            else:
+                return {"messgae": 'The Guild Id cannot be found'}, 401
+
+        except Exception as e:
+            return {'error': str(e)}
 
