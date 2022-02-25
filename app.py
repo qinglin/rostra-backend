@@ -51,18 +51,18 @@ class Get(Resource):
             return {'error': str(e)}
 
 
-@rostra_conf.route('/guild/get/<address>', methods=['GET'])
-@rostra_conf.doc(params={'address': 'wallet address'})
+@rostra_conf.route('/guild/get/<ipfsAddr>', methods=['GET'])
+@rostra_conf.doc(params={'ipfsAddr': 'ipfs addr'})
 @api.response(200, 'Query Successful')
 @api.response(500, 'Internal Error')
 class Get(Resource):
-    def get(self, address):
+    def get(self, ipfsAddr):
         try:
-            query_by_address = Guild.objects(creator=address)
-            print(query_by_address)
-            if query_by_address is not None and len(query_by_address) != 0:
+            query_by_ipfsAddr = Guild.objects(ipfsAddr=ipfsAddr)
+            print(query_by_ipfsAddr)
+            if query_by_ipfsAddr is not None and len(query_by_ipfsAddr) != 0:
                 return jsonify({
-                    "result": query_by_address
+                    "result": query_by_ipfsAddr
                 })
             else:
                 return {"result": []}, 200
@@ -70,41 +70,19 @@ class Get(Resource):
             return {'error': str(e)}
 
 
-member_fields = rostra_conf.model('member', {
-    "guild_id": fields.Integer(required=True, description='The guild id identifier'),
-    'wallet_address': fields.String(required=True, description='The wallet address of member'),
-})
 
 
-@rostra_conf.route('/guild/members/add/', methods=['POST'])
-class Add(Resource):
-    @rostra_conf.doc(body=member_fields, responses={201: 'Member added to Guild'})
-    @api.response(500, 'Internal Error')
-    def post(self):
-        data = api.payload
-        guild_id = data['guild_id']
-        wallet_address = data['wallet_address']
-        query_by_guild_id = Guild.objects(guild_id=guild_id)
-        guild = query_by_guild_id[0]
-        guild.members.append(wallet_address)
-        guild.save()
-        return {'message': 'SUCCESS'}, 201
+# nft = rostra_conf.model('Nft', {
+#     'name': fields.String,
+#     'baseURI': fields.String
+# })
 
-
-nft = rostra_conf.model('Nft', {
-    'name': fields.String,
-    'baseURI': fields.String
-})
-
-members = rostra_conf.model('Requirements', {
-    'nfts': fields.List(fields.Nested(nft)),
-    'guilds': fields.List(fields.Integer)
-})
 
 resource_fields = rostra_conf.model('guild', {
     'name': fields.String(required=True, description='The guild name identifier'),
     "desc": fields.String,
     "creator": fields.String,
+    "ipfsAddr": fields.String(required=True, description='The ipfs address of the guild')
 })
 
 
@@ -118,6 +96,7 @@ class Add(Resource):
             name = data['name']
             desc = data['desc']
             creator = data['creator']
+            ipfsAddr = data['ipfsAddr']
 
             # validation if the guild name already exists
             if len(Guild.objects(name=name)) != 0:
@@ -128,6 +107,7 @@ class Add(Resource):
                 name=name,
                 desc=desc,
                 creator=creator,
+                ipfsAddr=ipfsAddr
             )
             guild.save()
             return {'message': 'SUCCESS'}, 201
