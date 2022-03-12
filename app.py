@@ -1,9 +1,14 @@
+import dataclasses
+import json
+
 from flask import Flask, make_response
 from flask_mongoengine import MongoEngine
 from flask_restx import Resource, Api, fields
 from flask_cors import CORS
 from models import Guild
 from flask import jsonify
+from rsa_verify import flashsigner_verify
+
 import uuid
 
 app = Flask(__name__)
@@ -70,19 +75,16 @@ class Get(Resource):
             return {'error': str(e)}
 
 
-
-
 # nft = rostra_conf.model('Nft', {
 #     'name': fields.String,
 #     'baseURI': fields.String
 # })
-
-
 resource_fields = rostra_conf.model('guild', {
     'name': fields.String(required=True, description='The guild name identifier'),
     "desc": fields.String,
     "creator": fields.String,
-    "ipfsAddr": fields.String(required=True, description='The ipfs address of the guild')
+    "ipfsAddr": fields.String(required=True, description='The ipfs address of the guild'),
+    "signature": fields.String(requerd=True, description='The signature of the guild'),
 })
 
 
@@ -92,25 +94,38 @@ class Add(Resource):
     @api.response(500, 'Internal Error')
     @api.response(401, 'Validation Error')
     def post(self):
-            data = api.payload
-            name = data['name']
-            desc = data['desc']
-            creator = data['creator']
-            ipfsAddr = data['ipfsAddr']
+        data = api.payload
+        guildInfo = {
+            "name": data["name"],
+            "desc": data["desc"],
+            "creator": data["creator"],
+            "ipfsAddr": data["ipfsAddr"]},
 
-            # validation if the guild name already exists
-            if len(Guild.objects(name=name)) != 0:
-                return {'message': 'The Guild Name Already Exists! Please change your guild name'}, 401
+        signature = data['signature']
 
-            guild = Guild(
-                guild_id=str(uuid.uuid4()),
-                name=name,
-                desc=desc,
-                creator=creator,
-                ipfsAddr=ipfsAddr
-            )
-            guild.save()
-            return {'message': 'SUCCESS'}, 201
+        # validation if the guild name already exists
+        if len(Guild.objects(name=data['name'])) != 0:
+            return {'message': 'The Guild Name Already Exists! Please change your guild name'}, 401
+        # validation signature
+        if len(signature) == 0:
+            return {'message': 'The signature is empty'}, 401
+
+        message = json.dumps(guildInfo, separators=(',', ':'))
+        if len(message) > 2:
+            message = message[1:-1]
+        result = flashsigner_verify(message=message, signature=signature)
+        if result == False:
+            return {'message': 'The signature is error'}, 401
+        guild = Guild(
+            guild_id=str(uuid.uuid4()),
+            name=data['name'],
+            desc=data['desc'],
+            creator=data['creator'],
+            ipfsAddr=data['ipfsAddr'],
+            signature=signature
+        )
+        guild.save()
+        return {'message': 'SUCCESS'}, 201
 
 
 @rostra_conf.route('/guild/delete/<guild_id>', methods=['DELETE'])
@@ -132,4 +147,3 @@ class Delete(Resource):
 
         except Exception as e:
             return {'error': str(e)}
-
