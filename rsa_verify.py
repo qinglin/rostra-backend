@@ -21,5 +21,5 @@ def flashsigner_verify(message, signature, hash_method="SHA-256"):
     except ValueError:
         print("Could not convert data to an integer.")
     except BaseException as err:
-        print(f"Unexpected {err=}, {type(err)=}")
+        print(f"Unexpected %s, %s", (err, type(err)))
     return False
